@@ -33,11 +33,22 @@
                         @foreach ($categories as $cat)
                             <li class="py-4 flex justify-between items-center">
                                 <span>{{ $cat->name }}</span>
-                                <form action="{{ route('categories.destroy', $cat->id) }}" method="POST"
-                                    onsubmit="return confirm('Hapus kategori ini?')">
-                                    @csrf @method('DELETE')
-                                    <button class="text-red-500 hover:text-red-700 text-sm">Hapus</button>
-                                </form>
+                                <div class="flex items-center space-x-2">
+
+                                    <a href="{{ route('categories.edit', $cat->id) }}"
+                                        class="text-yellow-500 hover:text-yellow-700 font-bold text-sm">
+                                        Edit
+                                    </a>
+
+                                    <span class="text-gray-300">|</span>
+
+                                    <form action="{{ route('categories.destroy', $cat->id) }}" method="POST"
+                                        onsubmit="return confirm('Hapus kategori ini? Barang yang terkait akan ikut terhapus/error!')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="text-red-500 hover:text-red-700 text-sm font-bold">Hapus</button>
+                                    </form>
+                                </div>
                             </li>
                         @endforeach
                     </ul>

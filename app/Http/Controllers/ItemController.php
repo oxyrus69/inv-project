@@ -105,6 +105,13 @@ class ItemController extends Controller
             ->with('success', 'Barang berhasil diperbarui.');
     }
 
+    public function print()
+    {
+        $items = Item::with('category')->get();
+
+        return view('items.print', compact('items'));
+    }
+
     /**
      * Remove the specified resource from storage.
      */

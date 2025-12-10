@@ -21,6 +21,19 @@ class CategoryController extends Controller
         return back()->with('success', 'Kategori berhasil ditambahkan.');
     }
 
+    public function edit(Category $category)
+    {
+        return view('categories.edit', compact('category'));
+    }
+
+    public function update(Request $request, Category $category)
+    {
+        $request->validate(['name' => 'required|string|max:255']);
+        $category->update(['name' => $request->name]);
+
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbaharui.');
+    }
+
     public function destroy(Category $category)
     {
         $category->delete();
