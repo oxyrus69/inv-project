@@ -15,13 +15,12 @@ class ItemController extends Controller
     {
         $query = Item::query();
 
-        // Fitur Pencarian
+        // search
         if ($request->has('search')) {
             $query->where('name', 'like', '%' . $request->search . '%')
                 ->orWhere('category', 'like', '%' . $request->search . '%');
         }
 
-        // Paginasi 10 item per halaman
         $items = $query->paginate(10);
 
         return view('items.index', compact('items'));
