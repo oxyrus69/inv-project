@@ -27,7 +27,7 @@ if (!file_exists($storage)) {
     mkdir($storage . '/logs', 0777, true);
 }
 
-// Perintahkan Laravel pakai folder ini
+// Perintahkan Laravel pakai folder storage di /tmp
 $app->useStoragePath($storage);
 
 // Jalankan Aplikasi
