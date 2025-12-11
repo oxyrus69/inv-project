@@ -70,7 +70,7 @@ return [
             // --- KITA HARDCODE DATA NEON DI SINI ---
 
             // Host dari screenshot Neon kamu:
-            'host' => 'ep-bold-leaf-a4j5omne-pooler.us-east-1.aws.neon.tech',
+            'host' => 'ep-bold-leaf-a4j5omne.us-east-1.aws.neon.tech',
 
             'port' => '5432',
 
