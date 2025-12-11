@@ -18,14 +18,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/run-migration', function () {
-    // Paksa bersihkan cache dulu agar config terbaru terbaca
+    // Paksa bersihkan cache config
     Artisan::call('config:clear');
-    Artisan::call('cache:clear');
 
-    // Jalankan migrasi
-    Artisan::call('migrate', ["--force" => true]);
+    // GUNAKAN 'migrate:fresh'
+    // Ini akan MENGHAPUS semua tabel dulu, baru buat ulang.
+    // Dijamin 100% bersih dari error transaksi macet.
+    Artisan::call('migrate:fresh', [
+        "--force" => true,
+        "--seed" => true // Sekalian isi data dummy biar bisa login
+    ]);
 
-    return 'MIGRASI SUKSES! <br>' . nl2br(Artisan::output());
+    return 'RESET DATABASE & MIGRASI SUKSES! <br> Data Dummy sudah dibuat. <br>' . nl2br(Artisan::output());
 });
 
 Route::get('/run-seed', function () {
