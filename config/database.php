@@ -66,16 +66,28 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+
+            // --- KITA HARDCODE DATA NEON DI SINI ---
+
+            // Host dari screenshot Neon kamu:
+            'host' => 'ep-bold-leaf-a4j5omne-pooler.us-east-1.aws.neon.tech',
+
+            'port' => '5432',
+
+            // Database default Neon:
+            'database' => 'neondb',
+
+            // Username dari screenshot Neon kamu:
+            'username' => 'neondb_owner',
+
+            // PASTE PASSWORD NEON KAMU DI DALAM TANDA KUTIP INI:
+            'password' => 'npg_1hvjNOMqK4FI',
+
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => 'require', // Neon mewajibkan SSL
         ],
 
         'sqlsrv' => [
@@ -125,7 +137,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
