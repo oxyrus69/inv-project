@@ -10,18 +10,17 @@ use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes (Versi Debugging Terpisah)
+| Web Routes
 |--------------------------------------------------------------------------
 */
 
 Route::get('/fix-migration', function () {
     try {
-        // 1. Hapus Schema Public (Reset Total)
-        // Ini akan membuang semua tabel yang macet/error
+
         DB::statement('DROP SCHEMA public CASCADE');
         DB::statement('CREATE SCHEMA public');
 
-        // 2. Jalankan Migrasi dari Nol
+
         Artisan::call('migrate', ["--force" => true]);
 
         return '<h1>SUKSES! Database Reset & Migrasi Berhasil.</h1>' . nl2br(Artisan::output());
@@ -30,7 +29,7 @@ Route::get('/fix-migration', function () {
     }
 });
 
-// Route terpisah untuk Seeding (Isi Data)
+
 Route::get('/run-seed', function () {
     try {
         Artisan::call('db:seed', ["--force" => true]);
@@ -57,24 +56,12 @@ Route::get('/check-migrations', function () {
     ];
 });
 
-// TAHAP 2: HANYA MENGISI DATA
-Route::get('/run-seed', function () {
-    // Jalankan seeder secara terpisah
-    try {
-        Artisan::call('db:seed', ["--force" => true]);
-        return '2. DATA DUMMY BERHASIL DIISI! <br> Silakan Login sekarang. <br><br>' . nl2br(Artisan::output());
-    } catch (\Exception $e) {
-        // Jika error, kita tangkap pesannya biar jelas bagian mana yang salah
-        return 'ERROR SAAT SEEDING (Isi Data): <br>' . $e->getMessage();
-    }
-});
-
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified']) // Pastikan array di sini
+    ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
