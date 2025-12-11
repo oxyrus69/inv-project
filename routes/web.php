@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -13,21 +14,23 @@ use Illuminate\Support\Facades\Artisan;
 |--------------------------------------------------------------------------
 */
 
-// TAHAP 1: HANYA MEMBUAT TABEL (Tanpa Data)
-Route::get('/run-migration', function () {
+Route::get('/fix-migration', function () {
     try {
-        Artisan::call('config:clear');
-        Artisan::call('cache:clear');
+        // TAHAP 1: Hapus Total (Nuklir) via PHP
+        // Ini menjamin kita menghapus DB yang SEDANG terkoneksi ke Vercel
+        DB::statement('DROP SCHEMA public CASCADE');
+        DB::statement('CREATE SCHEMA public');
 
-        // PENTING: Gunakan 'migrate' biasa, bukan 'migrate:fresh'
-        // Karena database sudah kita bersihkan manual di Neon.
+        // TAHAP 2: Jalankan Migrasi Bersih
         Artisan::call('migrate', [
             "--force" => true
         ]);
 
-        return '1. MIGRASI BERHASIL! (Tabel sudah dibuat)<br><br>' . nl2br(Artisan::output());
+        return '<h1 style="color:green">SUKSES TOTAL!</h1>' .
+            'Database berhasil di-reset dan dimigrasi ulang.<br><br>' .
+            'Log Output:<br>' . nl2br(Artisan::output());
     } catch (\Exception $e) {
-        return 'ERROR MIGRASI: ' . $e->getMessage();
+        return '<h1 style="color:red">ERROR LAGI:</h1>' . $e->getMessage();
     }
 });
 
