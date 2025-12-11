@@ -5,36 +5,38 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes (Versi Debugging Terpisah)
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
+// TAHAP 1: HANYA MEMBUAT TABEL (Tanpa Data)
 Route::get('/run-migration', function () {
-    // Paksa bersihkan cache config
     Artisan::call('config:clear');
+    Artisan::call('cache:clear');
 
-    // GUNAKAN 'migrate:fresh'
-    // Ini akan MENGHAPUS semua tabel dulu, baru buat ulang.
-    // Dijamin 100% bersih dari error transaksi macet.
+    // Kita hapus "--seed" dari sini.
+    // Fokus hanya membuat struktur tabel kosong agar tidak crash.
     Artisan::call('migrate:fresh', [
-        "--force" => true,
-        "--seed" => true // Sekalian isi data dummy biar bisa login
+        "--force" => true
     ]);
 
-    return 'RESET DATABASE & MIGRASI SUKSES! <br> Data Dummy sudah dibuat. <br>' . nl2br(Artisan::output());
+    return '1. STRUKTUR DATABASE BERHASIL DIBUAT! <br> Sekarang jalankan /run-seed untuk isi data. <br><br>' . nl2br(Artisan::output());
 });
 
+// TAHAP 2: HANYA MENGISI DATA
 Route::get('/run-seed', function () {
-    Artisan::call('db:seed', ["--force" => true]);
-    return 'SEEDER SUKSES! <br>' . nl2br(Artisan::output());
+    // Jalankan seeder secara terpisah
+    try {
+        Artisan::call('db:seed', ["--force" => true]);
+        return '2. DATA DUMMY BERHASIL DIISI! <br> Silakan Login sekarang. <br><br>' . nl2br(Artisan::output());
+    } catch (\Exception $e) {
+        // Jika error, kita tangkap pesannya biar jelas bagian mana yang salah
+        return 'ERROR SAAT SEEDING (Isi Data): <br>' . $e->getMessage();
+    }
 });
 
 Route::get('/', function () {
@@ -42,19 +44,20 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware('auth', 'verified')
+    ->middleware(['auth', 'verified']) // Pastikan array di sini
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('items/print', [ItemController::class, 'print'])->name('items.print');
     Route::resource('items', ItemController::class);
-    Route::resource('categories', \App\Http\Controllers\CategoryController::class);
+    Route::resource('categories', CategoryController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/clear-cache', function () {
+// Route pembersih cache darurat
+Route::get('/force-clear', function () {
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
