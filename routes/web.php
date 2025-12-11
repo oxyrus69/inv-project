@@ -17,6 +17,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/run-migration', function () {
+    // Paksa bersihkan cache dulu agar config terbaru terbaca
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+
+    // Jalankan migrasi
+    Artisan::call('migrate', ["--force" => true]);
+
+    return 'MIGRASI SUKSES! <br>' . nl2br(Artisan::output());
+});
+
+Route::get('/run-seed', function () {
+    Artisan::call('db:seed', ["--force" => true]);
+    return 'SEEDER SUKSES! <br>' . nl2br(Artisan::output());
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
