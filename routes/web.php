@@ -17,13 +17,16 @@ use Illuminate\Support\Facades\Artisan;
 Route::get('/run-migration', function () {
     try {
         Artisan::call('config:clear');
+        Artisan::call('cache:clear');
 
-        // Kita pakai migrate biasa, karena tabel sudah kita hapus manual di Neon
-        Artisan::call('migrate', ["--force" => true]);
+        // KITA PAKAI 'migrate' BIASA (Tanpa Fresh)
+        // Karena database sudah kita bersihkan manual di Neon.
+        Artisan::call('migrate', [
+            "--force" => true
+        ]);
 
-        return 'MIGRASI BERHASIL! <br>' . nl2br(Artisan::output());
+        return '1. MIGRASI BERHASIL! (Tabel sudah dibuat)<br><br>' . nl2br(Artisan::output());
     } catch (\Exception $e) {
-        // Ini akan menampilkan error ASLI, bukan error "transaction aborted"
         return 'ERROR MIGRASI: ' . $e->getMessage();
     }
 });
