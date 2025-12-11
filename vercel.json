@@ -21,17 +21,5 @@
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
-    ],
-    "env": {
-        "APP_ENV": "production",
-        "APP_DEBUG": "true",
-        "APP_URL": "https://nama-project-kamu.vercel.app",
-        "APP_KEY": "base64:...",
-        "DB_CONNECTION": "pgsql",
-        "DB_HOST": "ep-....aws.neon.tech",
-        "DB_PORT": "5432",
-        "DB_DATABASE": "neondb",
-        "DB_USERNAME": "nama_user_neon",
-        "DB_PASSWORD": "password_neon"
-    }
+    ]
 }
