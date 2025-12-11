@@ -19,7 +19,7 @@ Route::get('/run-migration', function () {
         Artisan::call('config:clear');
         Artisan::call('cache:clear');
 
-        // KITA PAKAI 'migrate' BIASA (Tanpa Fresh)
+        // PENTING: Gunakan 'migrate' biasa, bukan 'migrate:fresh'
         // Karena database sudah kita bersihkan manual di Neon.
         Artisan::call('migrate', [
             "--force" => true
@@ -28,6 +28,16 @@ Route::get('/run-migration', function () {
         return '1. MIGRASI BERHASIL! (Tabel sudah dibuat)<br><br>' . nl2br(Artisan::output());
     } catch (\Exception $e) {
         return 'ERROR MIGRASI: ' . $e->getMessage();
+    }
+});
+
+// Route terpisah untuk Seeding (Isi Data)
+Route::get('/run-seed', function () {
+    try {
+        Artisan::call('db:seed', ["--force" => true]);
+        return '2. SEEDER BERHASIL! <br>' . nl2br(Artisan::output());
+    } catch (\Exception $e) {
+        return 'ERROR SEEDING: ' . $e->getMessage();
     }
 });
 
