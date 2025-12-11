@@ -16,21 +16,17 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/fix-migration', function () {
     try {
-        // TAHAP 1: Hapus Total (Nuklir) via PHP
-        // Ini menjamin kita menghapus DB yang SEDANG terkoneksi ke Vercel
+        // 1. Hapus Schema Public (Reset Total)
+        // Ini akan membuang semua tabel yang macet/error
         DB::statement('DROP SCHEMA public CASCADE');
         DB::statement('CREATE SCHEMA public');
 
-        // TAHAP 2: Jalankan Migrasi Bersih
-        Artisan::call('migrate', [
-            "--force" => true
-        ]);
+        // 2. Jalankan Migrasi dari Nol
+        Artisan::call('migrate', ["--force" => true]);
 
-        return '<h1 style="color:green">SUKSES TOTAL!</h1>' .
-            'Database berhasil di-reset dan dimigrasi ulang.<br><br>' .
-            'Log Output:<br>' . nl2br(Artisan::output());
+        return '<h1>SUKSES! Database Reset & Migrasi Berhasil.</h1>' . nl2br(Artisan::output());
     } catch (\Exception $e) {
-        return '<h1 style="color:red">ERROR LAGI:</h1>' . $e->getMessage();
+        return '<h1>MASIH ERROR:</h1>' . $e->getMessage();
     }
 });
 
