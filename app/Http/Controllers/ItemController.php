@@ -21,12 +21,12 @@ class ItemController extends Controller
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
+                $q->where('name', 'ilike', '%' . $search . '%')
                     ->orWhereHas('category', function ($subQuery) use ($search) {
-                        $subQuery->where('name', 'like', '%' . $search . '%');
+                        $subQuery->where('name', 'ilike', '%' . $search . '%');
                     })
-                    ->orWhere('quantity', 'like', '%' . $search . '%')
-                    ->orWhere('price', 'like', '%' . $search . '%');
+                    ->orWhere('quantity', 'ilike', '%' . $search . '%')
+                    ->orWhere('price', 'ilike', '%' . $search . '%');
             });
         }
 
