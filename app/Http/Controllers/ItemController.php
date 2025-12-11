@@ -107,7 +107,7 @@ class ItemController extends Controller
 
     public function print()
     {
-        $items = Item::with('category')->get();
+        $items = \App\Models\Item::with('category')->get();
 
         return view('items.print', compact('items'));
     }
