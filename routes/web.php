@@ -15,16 +15,17 @@ use Illuminate\Support\Facades\Artisan;
 
 // TAHAP 1: HANYA MEMBUAT TABEL (Tanpa Data)
 Route::get('/run-migration', function () {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
+    try {
+        Artisan::call('config:clear');
 
-    // Kita hapus "--seed" dari sini.
-    // Fokus hanya membuat struktur tabel kosong agar tidak crash.
-    Artisan::call('migrate:fresh', [
-        "--force" => true
-    ]);
+        // Kita pakai migrate biasa, karena tabel sudah kita hapus manual di Neon
+        Artisan::call('migrate', ["--force" => true]);
 
-    return '1. STRUKTUR DATABASE BERHASIL DIBUAT! <br> Sekarang jalankan /run-seed untuk isi data. <br><br>' . nl2br(Artisan::output());
+        return 'MIGRASI BERHASIL! <br>' . nl2br(Artisan::output());
+    } catch (\Exception $e) {
+        // Ini akan menampilkan error ASLI, bukan error "transaction aborted"
+        return 'ERROR MIGRASI: ' . $e->getMessage();
+    }
 });
 
 // TAHAP 2: HANYA MENGISI DATA
