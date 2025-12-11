@@ -67,27 +67,21 @@ return [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
 
-            // --- KITA HARDCODE DATA NEON DI SINI ---
-
-            // Host dari screenshot Neon kamu:
             'host' => 'ep-bold-leaf-a4j5omne.us-east-1.aws.neon.tech',
 
             'port' => '5432',
 
-            // Database default Neon:
             'database' => 'neondb',
 
-            // Username dari screenshot Neon kamu:
             'username' => 'neondb_owner',
 
-            // PASTE PASSWORD NEON KAMU DI DALAM TANDA KUTIP INI:
             'password' => 'npg_1hvjNOMqK4FI',
 
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'require', // Neon mewajibkan SSL
+            'sslmode' => 'require',
         ],
 
         'sqlsrv' => [
