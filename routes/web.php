@@ -28,6 +28,23 @@ Route::get('/run-migration', function () {
     }
 });
 
+Route::get('/check-migrations', function () {
+    $files = scandir(database_path('migrations'));
+    $usersMigrations = [];
+
+    foreach ($files as $file) {
+        if (strpos($file, 'users') !== false) {
+            $usersMigrations[] = $file;
+        }
+    }
+
+    return [
+        'TOTAL FILE' => count($files),
+        'FILE USERS (Harusnya cuma 1)' => $usersMigrations,
+        'SEMUA FILE' => $files
+    ];
+});
+
 // TAHAP 2: HANYA MENGISI DATA
 Route::get('/run-seed', function () {
     // Jalankan seeder secara terpisah
