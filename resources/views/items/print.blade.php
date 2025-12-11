@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <div class="fixed bottom-4 right-4 no-print flex gap-2">
+    <div class="fixed bottom-4 right-4 print:hidden flex gap-2">
         <button onclick="window.print()"
             class="bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 font-bold">
             Cetak / Simpan PDF
