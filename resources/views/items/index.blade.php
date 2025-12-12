@@ -52,29 +52,39 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($items as $item)
-                                <tr class="bg-white border-b hover:bg-gray-50">
-                                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        {{ $item->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ $item->category->name ?? $item->category }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $item->quantity }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Rp
-                                        {{ number_format($item->price, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex space-x-4">
-                                            <a href="{{ route('items.edit', $item->id) }}"
-                                                class="font-medium text-blue-600 hover:underline">Edit</a>
+                            @forelse ($items as $index => $item)
+                                <tr class="hover:bg-gray-100 border-b">
+                                    <td class="py-2 px-4 border-b text-center">{{ $index + $items->firstItem() }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $item->name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $item->category->name ?? '-' }}</td>
+                                    <td class="py-2 px-4 border-b text-center">{{ $item->quantity }}</td>
+                                    <td class="py-2 px-4 border-b">Rp {{ number_format($item->price, 0, ',', '.') }}
+                                    </td>
+                                    <td class="py-2 px-4 border-b text-center">
+                                        <a href="{{ route('items.edit', $item->id) }}"
+                                            class="text-blue-500 hover:text-blue-700 mx-1">Edit</a>
+                                        <form action="{{ route('items.destroy', $item->id) }}" method="POST"
+                                            class="inline" onsubmit="return confirm('Yakin ingin menghapus?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="text-red-500 hover:text-red-700 mx-1">Hapus</button>
+                                        </form>
+                                    </td>
+                                </tr>
 
-                                            <button
-                                                @click="showDeleteModal = true; deleteAction = '{{ route('items.destroy', $item->id) }}'"
-                                                class="font-medium text-red-600 hover:underline">
-                                                Hapus
-                                            </button>
+
+                            @empty
+                                <tr>
+
+                                    <td colspan="6" class="py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <p class="text-lg font-semibold">Data tidak ditemukan.</p>
+                                            <p class="text-sm">Coba kata kunci lain atau tambahkan barang baru.</p>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
