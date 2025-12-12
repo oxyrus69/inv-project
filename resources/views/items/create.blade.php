@@ -49,7 +49,7 @@
                             <label class="block text-gray-700 text-sm font-bold mb-2">Jumlah</label>
                             <input type="number" name="quantity" x-model="form.quantity"
                                 class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                required>
+                                required placeholder="Contoh: 120 (Numerik)">
                             @error('quantity')
                                 <span class="text-red-500 text-xs italic">{{ $message }}</span>
                             @enderror
@@ -58,7 +58,7 @@
                             <label class="block text-gray-700 text-sm font-bold mb-2">Harga Satuan (Rp)</label>
                             <input type="number" name="price" x-model="form.price"
                                 class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                required>
+                                required placeholder="Contoh: 1000">
                             @error('price')
                                 <span class="text-red-500 text-xs italic">{{ $message }}</span>
                             @enderror
