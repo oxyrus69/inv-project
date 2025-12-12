@@ -5,11 +5,15 @@
         </h2>
     </x-slot>
 
+    {{-- Inisialisasi Data Alpine --}}
     <div class="py-12" x-data="{ showDeleteModal: false, deleteAction: '' }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
+                {{-- TOOLBAR ATAS: Tombol Tambah, Cetak, dan PENCARIAN GLOBAL --}}
                 <div class="flex flex-col md:flex-row justify-between mb-4 gap-4">
+
+                    {{-- Bagian Kiri: Tombol Action --}}
                     <div class="flex gap-2 w-full md:w-auto">
                         <a href="{{ route('items.create') }}"
                             class="text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto">
@@ -26,29 +30,38 @@
                             Cetak Laporan
                         </a>
                     </div>
+
+                    {{-- Bagian Kanan: FORM PENCARIAN (Global Search) --}}
                     <form method="GET" action="{{ route('items.index') }}" class="flex w-full md:w-auto">
                         <input type="text" name="search" placeholder="Cari barang..."
-                            class="border rounded-l py-2 px-4 w-full" value="{{ request('search') }}">
+                            class="border rounded-l py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value="{{ request('search') }}">
                         <button type="submit"
-                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-r">Cari</button>
+                            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-r">
+                            Cari
+                        </button>
                     </form>
                 </div>
 
+                {{-- Pesan Sukses --}}
                 @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                         {{ session('success') }}
                     </div>
                 @endif
 
+                {{-- Tabel Data --}}
                 <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
                     <table class="w-full text-sm text-left text-gray-500">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                             <tr>
+                                {{-- Menambahkan Header NO agar sejajar --}}
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap text-center">No</th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">Nama Barang</th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">Kategori</th>
-                                <th scope="col" class="px-6 py-3 whitespace-nowrap">Jumlah</th>
-                                <th scope="col" class="px-6 py-3 whitespace-nowrap">Harga</th>
-                                <th scope="col" class="px-6 py-3 whitespace-nowrap">Aksi</th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap text-center">Jumlah</th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap text-right">Harga</th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,25 +71,23 @@
                                     <td class="py-2 px-4 border-b">{{ $item->name }}</td>
                                     <td class="py-2 px-4 border-b">{{ $item->category->name ?? '-' }}</td>
                                     <td class="py-2 px-4 border-b text-center">{{ $item->quantity }}</td>
-                                    <td class="py-2 px-4 border-b">Rp {{ number_format($item->price, 0, ',', '.') }}
+                                    <td class="py-2 px-4 border-b text-right">
+                                        Rp {{ number_format($item->price, 0, ',', '.') }}
                                     </td>
                                     <td class="py-2 px-4 border-b text-center">
                                         <a href="{{ route('items.edit', $item->id) }}"
-                                            class="text-blue-500 hover:text-blue-700 mx-1">Edit</a>
-                                        <form action="{{ route('items.destroy', $item->id) }}" method="POST"
-                                            class="inline" onsubmit="return confirm('Yakin ingin menghapus?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="text-red-500 hover:text-red-700 mx-1">Hapus</button>
-                                        </form>
+                                            class="text-blue-500 hover:text-blue-700 mx-1 font-bold">Edit</a>
+
+                                        {{-- Tombol Hapus (Pemicu Modal) --}}
+                                        <button type="button"
+                                            @click="showDeleteModal = true; deleteAction = '{{ route('items.destroy', $item->id) }}'"
+                                            class="text-red-500 hover:text-red-700 mx-1 font-bold">
+                                            Hapus
+                                        </button>
                                     </td>
                                 </tr>
-
-
                             @empty
                                 <tr>
-
                                     <td colspan="6" class="py-8 text-center text-gray-500">
                                         <div class="flex flex-col items-center justify-center">
                                             <p class="text-lg font-semibold">Data tidak ditemukan.</p>
@@ -89,20 +100,25 @@
                     </table>
                 </div>
 
+                {{-- Pagination --}}
                 <div class="mt-4">
                     {{ $items->links() }}
                 </div>
             </div>
         </div>
 
+        {{-- MODAL DELETE (Alpine JS) --}}
         <div x-show="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+
+                {{-- Overlay Gelap --}}
                 <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="showDeleteModal = false">
                     <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                 </div>
 
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
+                {{-- Konten Modal --}}
                 <div
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -118,14 +134,17 @@
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900">Hapus Data Barang</h3>
                                 <div class="mt-2">
-                                    <p class="text-sm text-gray-500">Apakah Anda yakin ingin menghapus data ini? Data
-                                        yang dihapus tidak dapat dikembalikan.</p>
+                                    <p class="text-sm text-gray-500">
+                                        Apakah Anda yakin ingin menghapus data ini? Data yang dihapus tidak dapat
+                                        dikembalikan.
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
 
+                        {{-- Form Delete (Dinamis dari Alpine) --}}
                         <form :action="deleteAction" method="POST">
                             @csrf
                             @method('DELETE')
