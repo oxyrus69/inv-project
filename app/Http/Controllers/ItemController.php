@@ -20,23 +20,40 @@ class ItemController extends Controller
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
 
+            // DETEKSI DATABASE: Apakah kita pakai Postgres (Neon) atau MySQL (Local)?
+            $isPgsql = DB::connection()->getDriverName() === 'pgsql';
 
-            if (DB::connection()->getDriverName() === 'pgsql') {
-                $operator = 'ilike'; // pgsql
-            } else {
-                $operator = 'like';  // mysql
-            }
+            // Tentukan operator: Postgres pakai 'ilike', MySQL pakai 'like'
+            $operator = $isPgsql ? 'ilike' : 'like';
 
-
-            $query->where(function ($q) use ($search, $operator) {
+            $query->where(function ($q) use ($search, $operator, $isPgsql) {
+                // 1. Cari di Nama Barang
                 $q->where('name', $operator, '%' . $search . '%')
-                    ->orWhereHas('category', function ($q) use ($search, $operator) {
-                        $q->where('name', $operator, '%' . $search . '%');
+
+                    // 2. Cari di Nama Kategori (Relasi)
+                    ->orWhereHas('category', function ($subQuery) use ($search, $operator) {
+                        $subQuery->where('name', $operator, '%' . $search . '%');
                     });
+
+                // 3. Cari di Jumlah & Harga (Angka)
+                if ($isPgsql) {
+                    // KHUSUS POSTGRES (Server):
+                    // Kita harus ubah angka jadi TEXT dulu baru bisa di-search pakai ilike
+                    // Kalau tidak di-cast, Postgres akan error "operator does not exist: integer ~~* unknown"
+                    $q->orWhereRaw("CAST(quantity AS TEXT) $operator ?", ['%' . $search . '%'])
+                        ->orWhereRaw("CAST(price AS TEXT) $operator ?", ['%' . $search . '%']);
+                } else {
+                    // KHUSUS MYSQL (Localhost):
+                    // MySQL fleksibel, angka bisa langsung di-search pakai like
+                    $q->orWhere('quantity', $operator, '%' . $search . '%')
+                        ->orWhere('price', $operator, '%' . $search . '%');
+                }
             });
         }
 
-        $items = $query->paginate(10);
+        // Urutkan data terbaru di paling atas (opsional, biar rapi)
+        $items = $query->latest()->paginate(10);
+
         return view('items.index', compact('items'));
     }
 
