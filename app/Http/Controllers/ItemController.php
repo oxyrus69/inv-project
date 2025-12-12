@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Item;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -14,24 +15,28 @@ class ItemController extends Controller
 
     public function index(Request $request)
     {
-
         $query = Item::with('category');
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search != '') {
             $search = $request->search;
 
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', '%' . $search . '%')
-                    ->orWhereHas('category', function ($subQuery) use ($search) {
-                        $subQuery->where('name', 'ilike', '%' . $search . '%');
-                    })
-                    ->orWhere('quantity', 'ilike', '%' . $search . '%')
-                    ->orWhere('price', 'ilike', '%' . $search . '%');
+
+            if (DB::connection()->getDriverName() === 'pgsql') {
+                $operator = 'ilike'; // pgsql
+            } else {
+                $operator = 'like';  // mysql
+            }
+
+
+            $query->where(function ($q) use ($search, $operator) {
+                $q->where('name', $operator, '%' . $search . '%')
+                    ->orWhereHas('category', function ($q) use ($search, $operator) {
+                        $q->where('name', $operator, '%' . $search . '%');
+                    });
             });
         }
 
         $items = $query->paginate(10);
-
         return view('items.index', compact('items'));
     }
 
